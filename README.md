@@ -87,3 +87,9 @@ scons platform=<platform> target=template_release
 ```
 
 Output goes to `addons/better-terrain/native/bin`.
+
+godot-cpp looks for NDK 23.2.8568313 below `ANDROID_HOME`. To use another installed NDK, point to it directly:
+
+```sh
+ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/<version> scons platform=android arch=arm64 target=template_release ANDROID_HOME=
+```

@@ -1,0 +1,16 @@
+[configuration]
+
+entry_symbol = "better_terrain_library_init"
+compatibility_minimum = "4.3"
+reloadable = true
+
+[libraries]
+
+macos.debug = "bin/libbetterterrain.macos.template_debug.framework"
+macos.release = "bin/libbetterterrain.macos.template_release.framework"
+windows.debug.x86_64 = "bin/libbetterterrain.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "bin/libbetterterrain.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "bin/libbetterterrain.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "bin/libbetterterrain.linux.template_release.x86_64.so"
+android.debug.arm64 = "bin/libbetterterrain.android.template_debug.arm64.so"
+android.release.arm64 = "bin/libbetterterrain.android.template_release.arm64.so"

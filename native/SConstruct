@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+import os
+
+env = SConscript("godot-cpp/SConstruct")
+env.Append(CPPPATH=["src/"])
+
+sources = []
+for root, _dirs, files in os.walk("src"):
+    sources += [os.path.join(root, f) for f in files if f.endswith(".cpp")]
+
+out_dir = "../addons/better-terrain/native/bin"
+out_name = "libbetterterrain"
+
+if env["platform"] == "macos":
+    name = f"{out_name}.{env['platform']}.{env['target']}"
+    library = env.SharedLibrary(f"{out_dir}/{name}.framework/{name}", source=sources)
+else:
+    library = env.SharedLibrary(f"{out_dir}/{out_name}{env['suffix']}{env['SHLIBSUFFIX']}", source=sources)
+
+Default(library)

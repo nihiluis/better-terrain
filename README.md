@@ -72,3 +72,18 @@ I made some videos on how to use this plugin.
 ### Contact
 
 Feel free to report bugs here, or find me (Portponky#6300) on the Godot official discord server. Have fun!
+
+## Native solver
+
+The `native-solver` branch adds a GDExtension that runs `update_terrain_cells` and `set_cells` in C++. Placements are identical to the GDScript solver, including the random tile choice. The GDScript solver is still used when the extension isn't loaded, for non-square tile shapes, and for tilesets with vertex matching terrains.
+
+The libraries aren't committed. Get the `better-terrain` artifact of the "Build native solver" workflow, or build them yourself:
+
+```sh
+git submodule update --init
+cd native
+scons platform=<platform> target=template_debug
+scons platform=<platform> target=template_release
+```
+
+Output goes to `addons/better-terrain/native/bin`.

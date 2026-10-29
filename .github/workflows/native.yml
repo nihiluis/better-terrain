@@ -1,0 +1,63 @@
+name: Build native solver
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.platform }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { platform: linux, arch: x86_64, os: ubuntu-22.04 }
+          - { platform: windows, arch: x86_64, os: windows-latest }
+          - { platform: macos, arch: universal, os: macos-latest }
+          - { platform: android, arch: arm64, os: ubuntu-22.04 }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - run: pip install scons
+
+      # godot-cpp 4.3 expects this exact NDK below $ANDROID_HOME.
+      - if: matrix.platform == 'android'
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;23.2.8568313" > /dev/null
+
+      - name: Build
+        working-directory: native
+        run: |
+          scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_debug -j4
+          scons platform=${{ matrix.platform }} arch=${{ matrix.arch }} target=template_release -j4
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bin-${{ matrix.platform }}-${{ matrix.arch }}
+          path: addons/better-terrain/native/bin
+
+  package:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bin-*
+          path: addons/better-terrain/native/bin
+          merge-multiple: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: better-terrain
+          path: |
+            addons/better-terrain
+            !addons/better-terrain/native/.gitignore

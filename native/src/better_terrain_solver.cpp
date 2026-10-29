@@ -1,28 +1,28 @@
-#include "better_terrain_native.hpp"
+#include "better_terrain_solver.hpp"
 
-void BetterTerrainNative::_bind_methods() {
+void BetterTerrainSolver::_bind_methods() {
   ClassDB::bind_method(D_METHOD("setup", "cache", "terrain_types", "tile_shape"),
-                       &BetterTerrainNative::setup);
+                       &BetterTerrainSolver::setup);
   ClassDB::bind_method(
       D_METHOD("update_terrain_cells", "tm", "cells", "and_surrounding_cells",
                "use_seed", "rng"),
-      &BetterTerrainNative::update_terrain_cells);
+      &BetterTerrainSolver::update_terrain_cells);
   ClassDB::bind_method(D_METHOD("set_cells", "tm", "coords", "source_id",
                                 "atlas_coords", "alternative_tile"),
-                       &BetterTerrainNative::set_cells);
+                       &BetterTerrainSolver::set_cells);
 }
 
-BetterTerrainNative::BetterTerrainNative() {}
+BetterTerrainSolver::BetterTerrainSolver() {}
 
-BetterTerrainNative::~BetterTerrainNative() {}
+BetterTerrainSolver::~BetterTerrainSolver() {}
 
-bool BetterTerrainNative::setup(const Array& cache,
+bool BetterTerrainSolver::setup(const Array& cache,
                                 const PackedInt32Array& terrain_types,
                                 int tile_shape) {
   return solver.setup(cache, terrain_types, tile_shape);
 }
 
-bool BetterTerrainNative::update_terrain_cells(
+bool BetterTerrainSolver::update_terrain_cells(
     TileMapLayer* tm, const Array& cells, bool and_surrounding_cells,
     bool use_seed, const Ref<RandomNumberGenerator>& rng) {
   ERR_FAIL_NULL_V(tm, false);
@@ -31,7 +31,7 @@ bool BetterTerrainNative::update_terrain_cells(
                                      use_seed, rng);
 }
 
-bool BetterTerrainNative::set_cells(TileMapLayer* tm, const Array& coords,
+bool BetterTerrainSolver::set_cells(TileMapLayer* tm, const Array& coords,
                                     int source_id, const Vector2i& atlas_coords,
                                     int alternative_tile) {
   ERR_FAIL_NULL_V(tm, false);

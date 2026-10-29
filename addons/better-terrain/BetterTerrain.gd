@@ -25,10 +25,10 @@ const TERRAIN_META = &"_better_terrain"
 const TERRAIN_SYSTEM_VERSION = "0.2"
 
 var _tile_cache = {}
-## TileSet -> native solver built from its tile cache, or null where the native
-## solver can't reproduce the GDScript one.
-var _native_cache = {}
-var _native_available := ClassDB.class_exists(&"BetterTerrainNative")
+## TileSet -> BetterTerrainSolver built from its tile cache, or null where it
+## can't reproduce the GDScript solver.
+var _solver_cache = {}
+var _solver_available := ClassDB.class_exists(&"BetterTerrainSolver")
 var rng = RandomNumberGenerator.new()
 var use_seed := true
 
@@ -191,27 +191,27 @@ func _get_cache_terrain(ts_meta : Dictionary, index: int) -> Array:
 	return ts_meta.terrains[index]
 
 
-func _get_native(ts: TileSet) -> Object:
-	if !_native_available or !ts:
+func _get_solver(ts: TileSet) -> Object:
+	if !_solver_available or !ts:
 		return null
-	if _native_cache.has(ts):
-		return _native_cache[ts]
+	if _solver_cache.has(ts):
+		return _solver_cache[ts]
 	
 	var cache := _get_cache(ts)
 	var terrain_types := PackedInt32Array()
 	for t in _get_terrain_meta(ts).terrains:
 		terrain_types.push_back(t[2])
 	
-	var native = ClassDB.instantiate(&"BetterTerrainNative")
-	if !native.setup(cache, terrain_types, ts.tile_shape):
-		native = null
-	_native_cache[ts] = native
-	return native
+	var solver = ClassDB.instantiate(&"BetterTerrainSolver")
+	if !solver.setup(cache, terrain_types, ts.tile_shape):
+		solver = null
+	_solver_cache[ts] = solver
+	return solver
 
 
 func _purge_cache(ts: TileSet) -> void:
 	_tile_cache.erase(ts)
-	_native_cache.erase(ts)
+	_solver_cache.erase(ts)
 	for c in get_children():
 		if c.tileset == ts:
 			c.tidy()
@@ -928,8 +928,8 @@ func set_cells(tm: TileMapLayer, coords: Array, type: int) -> bool:
 		return false
 	
 	var tile = cache[type].front()
-	var native = _get_native(tm.tile_set)
-	if native and native.set_cells(tm, coords, tile[0], tile[1], tile[2]):
+	var solver = _get_solver(tm.tile_set)
+	if solver and solver.set_cells(tm, coords, tile[0], tile[1], tile[2]):
 		return true
 	
 	for c in coords:
@@ -1044,8 +1044,8 @@ func update_terrain_cells(tm: TileMapLayer, cells: Array, and_surrounding_cells 
 	if !tm or !tm.tile_set:
 		return
 	
-	var native = _get_native(tm.tile_set)
-	if native and native.update_terrain_cells(tm, cells, and_surrounding_cells, use_seed, rng):
+	var solver = _get_solver(tm.tile_set)
+	if solver and solver.update_terrain_cells(tm, cells, and_surrounding_cells, use_seed, rng):
 		return
 	
 	if and_surrounding_cells:

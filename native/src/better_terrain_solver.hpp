@@ -1,5 +1,5 @@
-#ifndef BETTER_TERRAIN_NATIVE_H
-#define BETTER_TERRAIN_NATIVE_H
+#ifndef BETTER_TERRAIN_SOLVER_H
+#define BETTER_TERRAIN_SOLVER_H
 
 #include <godot_cpp/classes/random_number_generator.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
@@ -18,8 +18,8 @@ using namespace godot;
  * BetterTerrain.gd from its GDScript tile cache and dropped whenever that cache
  * is purged. Placements must match BetterTerrain.gd exactly, including RNG use.
  */
-class BetterTerrainNative : public RefCounted {
-  GDCLASS(BetterTerrainNative, RefCounted)
+class BetterTerrainSolver : public RefCounted {
+  GDCLASS(BetterTerrainSolver, RefCounted)
 
  protected:
   static void _bind_methods();
@@ -51,11 +51,11 @@ class BetterTerrainNative : public RefCounted {
   bool set_cells(TileMapLayer* tm, const Array& coords, int source_id,
                  const Vector2i& atlas_coords, int alternative_tile);
 
-  BetterTerrainNative();
-  ~BetterTerrainNative();
+  BetterTerrainSolver();
+  ~BetterTerrainSolver();
 
  private:
   better_terrain::Solver solver;
 };
 
-#endif  // BETTER_TERRAIN_NATIVE_H
+#endif  // BETTER_TERRAIN_SOLVER_H
